@@ -60,6 +60,8 @@ namespace Pong
         int counter = 0;
         Random randGen = new Random();
         int R, G, B;
+        bool fade = true;
+        bool cheat;
         #endregion
 
         public Form1()
@@ -92,6 +94,9 @@ namespace Pong
                         bonusMode = false;
                         SetParameters();
                     }
+                    break;
+                case Keys.Q:
+                    cheat = true;
                     break;
                 case Keys.D1:
                     if (newGameOk)
@@ -186,54 +191,94 @@ namespace Pong
         private void gameUpdateLoop_Tick(object sender, EventArgs e)
         {
             #region update ball position
+            //most of the bonus mode features here:
             if (bonusMode)
             {
-                if (counter < 1000)
+                if (cheat)
+                {
+                    player1Score++;
+                    cheat = false;
+                }
+                if (counter < 300)
                 {
                     counter++;
+                    if (ball.Width > 4)
+                    {
+                        ball.Width = ball.Height = ball.Width--;
+                    }
+                    
                 }
 
                 else
                 {
-                    BALL_SPEED = BALL_SPEED + (counter / 1000);
+                    if (BALL_SPEED < 30)
+                    {
+
+                        BALL_SPEED = BALL_SPEED + (counter / 300);
+                        PADDLE_SPEED = BALL_SPEED;
+                        
+                    }
                     counter = 0;
                 }
 
                 if (player1Score == 5)
                 {
-                    PADDLE_SPEED *= 2;
+                    
                     whiteBrush.Color = Color.Aqua;
+                }
+
+                else if (player1Score == 7)
+                {
+                    
+                    whiteBrush.Color = Color.Orange;
                 }
 
                 else if (player1Score == 10)
                 {
-                    PADDLE_SPEED *= 2;
-                    whiteBrush.Color = Color.Orange;
-                }
-
-                else if (player1Score == 15)
-                {
-                    PADDLE_SPEED *= 2;
+                    
                     whiteBrush.Color = Color.LimeGreen;
                 }
 
-                else if (player1Score == 20)
+                else if (player1Score == 12)
                 {
-                    PADDLE_SPEED *= 2;
+                    
                     whiteBrush.Color = Color.Purple;
                 }
     
-                if (player1Score >= 25)
+                if (player1Score >= 15)
                 {
-                    if (counter % 20 == 0)
+                    
+                    if (R < 255 && G < 255 && B < 255 && fade == true)
                     {
-                        R = randGen.Next(1, 255);
-                        G = randGen.Next(1, 255);
-                        B = randGen.Next(1, 255);
-
+                        R++;
+                        G++;
+                        B++;
                         whiteBrush.Color = Color.FromArgb(R, G, B);
                     }
-                    
+                    else if (R == 255 && B == 255 && G == 255 && fade == true)
+                    {
+                        fade = false;
+                    }
+                    else if (fade = false && R > 0)
+                    {
+
+                        R--;
+                        G--;
+                        B--;
+                        whiteBrush.Color = Color.FromArgb(R, G, B);
+                    }
+                    else if (R == 0 && fade == false)
+                    {
+                        fade = true;
+                    }
+ 
+                }
+                if (player1Score >= 20 && counter % 20 == 0)
+                {
+                    R = randGen.Next(1,256);
+                    B = randGen.Next(1, 256);
+                    G = randGen.Next(1, 256);
+                    whiteBrush.Color = Color.FromArgb(R, G, B);
                 }
 
 
@@ -318,6 +363,7 @@ namespace Pong
             #region ball collision with paddles
             if (!bonusMode)
             {
+               
                 if (ball.IntersectsWith(p1) || ball.IntersectsWith(p2))
                 {
                     // --- play a "paddle hit" sound and
@@ -325,6 +371,7 @@ namespace Pong
                     // --- use ballMoveRight boolean to change direction
                     ballMoveRight = !ballMoveRight;
                 }
+
             }
             // TODO create if statment that checks player collides with ball and if it does
             if (bonusMode)
@@ -333,6 +380,7 @@ namespace Pong
                 {
                     collisionSound.Play();
                     ballMoveRight = !ballMoveRight;
+                    
                 }
                 else if (ball.IntersectsWith(p1))
                 {
