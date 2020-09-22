@@ -148,6 +148,11 @@ namespace Pong
                 BALL_SPEED = 4;
                 PADDLE_SPEED = 4;
                 gameUpdateLoop.Start();
+                R = 0;
+                G = 0;
+                B = 0;
+                whiteBrush.Color = Color.White;
+                fade = true;
             }
 
             //set starting position for paddles on new game and point scored 
